@@ -33,7 +33,7 @@ def partition(iter, pred):
 
 
 def get_dataset_files(root_dir):
-    #return my_listdir(root_dir, 5000)
+    #return my_listdir(root_dir, 200)
     rng = random.Random(47)
     all_file_list = my_listdir(root_dir, 500000)
     pcr_files, native_files = partition(all_file_list, lambda fname: "GXB" in fname or "MINICOL" in fname)
@@ -45,7 +45,6 @@ def load_file(fname):
     alph = np.zeros(256, dtype=np.int8)
     for i,c in enumerate("ACGTN"):
         alph[ord(c)] = i
-
     data = np.load(fname)
 
     x = np.array(data[data.files[0]], dtype=np.float32)
@@ -100,10 +99,13 @@ def prep_batch(
         x = np.array(X[sam][pos : pos + leng], dtype=np.float32)
         if clip:
             x = np.clip(x, -2.5, 2.5)
+        y_base = Y[sam][pos:pos+leng]
         x = np.vstack([x]).T
-        y_base = Y[sam][pos:pos+leng][target_cut:-target_cut]
-
-        y = [point for point in y_base if point != 4]
+        #x = np.vstack([x, (y_base != 4).astype(np.float32)]).T
+        #print(x)
+        y_base = y_base[target_cut:-target_cut]
+        y = y_base[np.where(y_base != 4)]
+        #y = [point for point in y_base if point != 4]
 
         if len(y) < 10 or len(y) > x.shape[0] // 3:
             continue

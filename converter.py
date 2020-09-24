@@ -13,7 +13,7 @@ def convert(model, get_batch, STEPS=5000, BATCH_SIZE=4):
     concrete_func = run_model.get_concrete_function(tf.TensorSpec([BATCH_SIZE, STEPS, 1], dtype=tf.float32))
     converter = tf.lite.TFLiteConverter.from_concrete_functions([concrete_func])
 
-    converter.experimental_new_converter = True
+    #converter.experimental_new_converter = True
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
 
     converter.representative_dataset = representative_dataset_gen

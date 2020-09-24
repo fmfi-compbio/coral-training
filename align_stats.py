@@ -4,6 +4,8 @@ import numpy as np
 
 def align_dist(outputs, bby):
     alph = "ACGT"
+    #alph = "AACCGGTT"
+
     ed_total = 0
     size_total = 0
     for out, by in zip(outputs[:3], bby[:3]):
@@ -14,7 +16,7 @@ def align_dist(outputs, bby):
             #print(p)
             if p == prev:
                 continue
-            if p != 4:
+            if p != len(alph):
                 preds.append(p)
             prev = p
         alignment = pairwise2.align.globalms(
