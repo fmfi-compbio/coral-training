@@ -225,7 +225,7 @@ def pool(*, type="pool", filters, pool_filters, pool=3, repeat=3,blocks=5, kerne
 
         #B
         *[
-            dict(**common, type=type, pool=pool, repeat = repeat, pool_filters=pool_filters, filters = filters, kernel = kernel, residual=True, separable = True, **kwargs)
+            dict(**common, type=type, pool=pool, repeat = repeat, pool_filters=pool_filters, filters = filters, kernel = kernel, separable = True, **kwargs)
             for _ in range(blocks)
         ],
 
