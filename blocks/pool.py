@@ -104,6 +104,78 @@ class Pool(tf.keras.layers.Layer):
         _fold_bn(self.head, self.residual)
 
 
+class PoolEraseA(tf.keras.layers.Layer):
+    def __init__(self, *, pool, pool_filters, repeat,filters,kernel, activation, stride=1, separable=False, bn_momentum=0.9, **kwargs):
+        super().__init__(**kwargs)
+        
+        def _tcs(*, bn_momentum, **kwargs):
+            return [
+                tcsconv(**kwargs),
+                tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
+            ]
+
+        def _activation():
+            return [
+                tf.keras.layers.Activation(activations[activation]),
+            ] if activation else []
+        
+        layers = [
+            tf.keras.layers.MaxPool2D(pool_size=(1, pool)),
+        ]
+        for _ in range(repeat-1):
+            layers.extend(
+                _tcs(
+                    out_channels=pool_filters,
+                    kernel=kernel,
+                    separable=separable,
+                    stride=stride,
+                    bn_momentum=bn_momentum,
+                    dilation=1 if _ == 1 else 1,
+                )
+            )
+            layers.extend(
+                _activation() if _ % 2 == 0 else [tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)]
+            )
+
+        layers.extend(
+            _tcs(
+                out_channels=pool_filters,
+                kernel=kernel,
+                separable=separable,
+                stride=stride,
+                bn_momentum=bn_momentum,
+                dilation=1,
+            )
+        )
+        layers.extend([
+            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3),
+            tf.keras.layers.Activation(activations[activation]),
+
+            tf.keras.layers.Conv2DTranspose(filters=filters, kernel_size=(1, pool), strides=(1, pool), use_bias=False),
+            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
+        ])
+        self.main = layers
+        
+        self.residual = _tcs(
+            out_channels=filters,
+            kernel=kernel,
+            stride=stride,
+            separable=separable,
+            bn_momentum=bn_momentum,
+            dilation=1,
+        )
+
+        self.final = _activation()
+    
+    def call(self, inputs, training=False):
+        x1 = seq(self.main, inputs, training=training)
+        x2 = seq(self.residual, inputs, training=training)
+        return seq(self.final, x1+x2, training=training)
+
+    def fold_bn(self):
+        _fold_bn(self.head, self.residual)
+
+
 class PoolConv(tf.keras.layers.Layer):
     def __init__(self, *, pool, pool_filters, repeat,filters,kernel, activation, stride=1,separable=False, bn_momentum=0.9, **kwargs):
         super().__init__(**kwargs)
@@ -162,20 +234,20 @@ class PoolConv(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = _tcs(
-                out_channels=filters,
-                kernel=kernel,
-                stride=stride,
-                separable=separable,
-                bn_momentum=bn_momentum,
-                dilation=1,
-            )
+        self.residual = _tcs(
+            out_channels=filters,
+            kernel=kernel,
+            stride=stride,
+            separable=separable,
+            bn_momentum=bn_momentum,
+            dilation=1,
+        )
 
         self.final = _activation()
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -843,20 +915,20 @@ class PoolXY(tf.keras.layers.Layer):
 
         self.head = layers
         
-            self.residual = _tcs(
-                out_channels=filters,
-                kernel=kernel,
-                stride=stride,
-                separable=separable,
-                bn_momentum=bn_momentum,
-                dilation=1,
-            )
+        self.residual = _tcs(
+            out_channels=filters,
+            kernel=kernel,
+            stride=stride,
+            separable=separable,
+            bn_momentum=bn_momentum,
+            dilation=1,
+        )
 
         self.final = _activation()
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -929,20 +1001,20 @@ class PoolXU(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = _tcs(
-                out_channels=filters,
-                kernel=kernel,
-                stride=stride,
-                separable=separable,
-                bn_momentum=bn_momentum,
-                dilation=1,
-            )
+        self.residual = _tcs(
+            out_channels=filters,
+            kernel=kernel,
+            stride=stride,
+            separable=separable,
+            bn_momentum=bn_momentum,
+            dilation=1,
+        )
 
         self.final = _activation()
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -1024,14 +1096,14 @@ class PoolXV(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = _tcs(
-                out_channels=filters,
-                kernel=kernel,
-                stride=stride,
-                separable=separable,
-                bn_momentum=bn_momentum,
-                dilation=1,
-            )
+        self.residual = _tcs(
+            out_channels=filters,
+            kernel=kernel,
+            stride=stride,
+            separable=separable,
+            bn_momentum=bn_momentum,
+            dilation=1,
+        )
 
         self.final = _activation()
     
@@ -1100,13 +1172,13 @@ class PoolXDecor(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = _tcs(
-                out_channels=filters,
-                kernel=kernel,
-                stride=stride,
-                separable=separable,
-                bn_momentum=bn_momentum,
-            )
+        self.residual = _tcs(
+            out_channels=filters,
+            kernel=kernel,
+            stride=stride,
+            separable=separable,
+            bn_momentum=bn_momentum,
+        )
 
         self.final = [
             tf.keras.layers.Activation(activations[activation])
@@ -1114,7 +1186,7 @@ class PoolXDecor(tf.keras.layers.Layer):
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -1164,19 +1236,19 @@ class PoolY(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = _tcs(
-                out_channels=filters,
-                kernel=kernel,
-                stride=stride,
-                separable=separable,
-                bn_momentum=bn_momentum,
-            )
+        self.residual = _tcs(
+            out_channels=filters,
+            kernel=kernel,
+            stride=stride,
+            separable=separable,
+            bn_momentum=bn_momentum,
+        )
 
         self.final = _activation()
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -1289,33 +1361,33 @@ class PoolF(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = [
-                tf.keras.layers.Conv2D(
-                    kernel_size=(1,1),
-                    strides=(1,1),
-                    padding="same",
-                    filters=filters // 2,
-                ),      
-                tf.keras.layers.DepthwiseConv2D(
-                    kernel_size=(1, kernel),
-                    strides=(1, 1),
-                    padding="same",
-                    depth_multiplier=2, 
-                ),
-                tf.keras.layers.Conv2D(
-                    kernel_size=(1,1),
-                    strides=(1,1),
-                    padding="same",
-                    filters=filters,
-                ),            
-                tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
-            ]
+        self.residual = [
+            tf.keras.layers.Conv2D(
+                kernel_size=(1,1),
+                strides=(1,1),
+                padding="same",
+                filters=filters // 2,
+            ),      
+            tf.keras.layers.DepthwiseConv2D(
+                kernel_size=(1, kernel),
+                strides=(1, 1),
+                padding="same",
+                depth_multiplier=2, 
+            ),
+            tf.keras.layers.Conv2D(
+                kernel_size=(1,1),
+                strides=(1,1),
+                padding="same",
+                filters=filters,
+            ),            
+            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
+        ]
 
         self.final = _activation()
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -1384,27 +1456,27 @@ class PoolFF(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = [
-                tf.keras.layers.Conv2D(
-                    kernel_size=(1,1),
-                    strides=(1,1),
-                    padding="same",
-                    filters=filters // 2,
-                ),      
-                tf.keras.layers.DepthwiseConv2D(
-                    kernel_size=(1, kernel),
-                    strides=(1, 1),
-                    padding="same",
-                    depth_multiplier=2, 
-                ),
-                tf.keras.layers.Conv2D(
-                    kernel_size=(1,1),
-                    strides=(1,1),
-                    padding="same",
-                    filters=filters,
-                ),            
-                tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
-            ]
+        self.residual = [
+            tf.keras.layers.Conv2D(
+                kernel_size=(1,1),
+                strides=(1,1),
+                padding="same",
+                filters=filters // 2,
+            ),      
+            tf.keras.layers.DepthwiseConv2D(
+                kernel_size=(1, kernel),
+                strides=(1, 1),
+                padding="same",
+                depth_multiplier=2, 
+            ),
+            tf.keras.layers.Conv2D(
+                kernel_size=(1,1),
+                strides=(1,1),
+                padding="same",
+                filters=filters,
+            ),            
+            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
+        ]
 
         self.final = [
             tf.keras.layers.Activation(activations[activation]),
@@ -1412,7 +1484,7 @@ class PoolFF(tf.keras.layers.Layer):
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -1469,21 +1541,21 @@ class PoolJJ(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = [
-                tf.keras.layers.Conv2D(
-                    kernel_size=(1,1),
-                    strides=(1,1),
-                    padding="same",
-                    filters=filters // 2,
-                ),      
-                tf.keras.layers.DepthwiseConv2D(
-                    kernel_size=(1, kernel),
-                    strides=(1, 1),
-                    padding="same",
-                    depth_multiplier=2, 
-                ),       
-                tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
-            ]
+        self.residual = [
+            tf.keras.layers.Conv2D(
+                kernel_size=(1,1),
+                strides=(1,1),
+                padding="same",
+                filters=filters // 2,
+            ),      
+            tf.keras.layers.DepthwiseConv2D(
+                kernel_size=(1, kernel),
+                strides=(1, 1),
+                padding="same",
+                depth_multiplier=2, 
+            ),       
+            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
+        ]
 
         self.final = [
             tf.keras.layers.Activation(activations[activation]),
@@ -1491,7 +1563,7 @@ class PoolJJ(tf.keras.layers.Layer):
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -1541,35 +1613,35 @@ class PoolG(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = [
-                tf.keras.layers.Conv2D(
-                    kernel_size=(1,1),
-                    strides=(1,1),
-                    padding="same",
-                    filters=filters // 2,
-                ),      
-                tf.keras.layers.DepthwiseConv2D(
-                    kernel_size=(1, kernel),
-                    strides=(1, 1),
-                    padding="same",
-                    depth_multiplier=2, 
-                ),
-                tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3),
-                tf.keras.layers.Activation(activations[activation]),
-                tf.keras.layers.Conv2D(
-                    kernel_size=(1,1),
-                    strides=(1,1),
-                    padding="same",
-                    filters=filters,
-                ),            
-                tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
-            ]
+        self.residual = [
+            tf.keras.layers.Conv2D(
+                kernel_size=(1,1),
+                strides=(1,1),
+                padding="same",
+                filters=filters // 2,
+            ),      
+            tf.keras.layers.DepthwiseConv2D(
+                kernel_size=(1, kernel),
+                strides=(1, 1),
+                padding="same",
+                depth_multiplier=2, 
+            ),
+            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3),
+            tf.keras.layers.Activation(activations[activation]),
+            tf.keras.layers.Conv2D(
+                kernel_size=(1,1),
+                strides=(1,1),
+                padding="same",
+                filters=filters,
+            ),            
+            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
+        ]
 
         self.final = _activation()
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -1619,28 +1691,28 @@ class PoolH(tf.keras.layers.Layer):
         ])
         self.head = layers
         
-            self.residual = [
-                tf.keras.layers.Conv2D(
-                    kernel_size=(1,2),
-                    strides=(1,2),
-                    padding="same",
-                    filters=filters,
-                ),      
-                tf.keras.layers.DepthwiseConv2D(
-                    kernel_size=(1, kernel),
-                    strides=(1, 1),
-                    padding="same",
-                    depth_multiplier=1, 
-                ),
-                tf.keras.layers.Conv2DTranspose(filters=filters, kernel_size=(1, 2), strides=(1,2), use_bias=False),
-                tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3),
-            ]
+        self.residual = [
+            tf.keras.layers.Conv2D(
+                kernel_size=(1,2),
+                strides=(1,2),
+                padding="same",
+                filters=filters,
+            ),      
+            tf.keras.layers.DepthwiseConv2D(
+                kernel_size=(1, kernel),
+                strides=(1, 1),
+                padding="same",
+                depth_multiplier=1, 
+            ),
+            tf.keras.layers.Conv2DTranspose(filters=filters, kernel_size=(1, 2), strides=(1,2), use_bias=False),
+            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3),
+        ]
 
         self.final = _activation()
     
     def call(self, inputs, training=False):
         x = seq(self.head, inputs, training=training)
-            x += seq(self.residual, inputs, training=training)
+        x += seq(self.residual, inputs, training=training)
         return seq(self.final, x, training=training)
 
     def fold_bn(self):
@@ -1675,4 +1747,5 @@ BLOCKS = {
     "pooljj": PoolJJ,
     "poolg": PoolG,
     "poolh": PoolH,
+    "poolerasea": PoolEraseA,
 }

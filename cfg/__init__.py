@@ -521,6 +521,8 @@ configs = {
     "poolx3r5initipre2": lambda: pool(type="poolxinitipre2", pool=3, filters=128, pool_filters=256, repeat=5),
     "poolx3r5initipre3": lambda: pool(type="poolxinitipre3", pool=3, filters=128, pool_filters=256, repeat=5),
 
+    "poolerasea3r5": lambda: pool(type="poolerasea", pool=3, filters=128, pool_filters=256, repeat=5),
+
     # TODO
 
 
