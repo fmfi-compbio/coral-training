@@ -101,7 +101,7 @@ class Pool(tf.keras.layers.Layer):
         return seq(self.final, x1+x2, training=training)
 
     def fold_bn(self):
-        _fold_bn(self.head, self.residual)
+        _fold_bn(self.main, self.residual)
 
 
 class PoolEraseA(tf.keras.layers.Layer):
