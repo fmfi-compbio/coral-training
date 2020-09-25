@@ -105,8 +105,9 @@ class Pool(tf.keras.layers.Layer):
 
 
 class PoolEraseA(tf.keras.layers.Layer):
-    def __init__(self, *, pool, pool_filters, repeat,filters,kernel, activation, stride=1, separable=False, bn_momentum=0.9, **kwargs):
+    def __init__(self, *, pool, pool_filters, repeat,filters,kernel, activation, pool_kernel=None, stride=1,separable=False, bn_momentum=0.9, **kwargs):
         super().__init__(**kwargs)
+        pool_kernel = pool_kernel if pool_kernel else kernel
         
         def _tcs(*, bn_momentum, **kwargs):
             return [
@@ -120,9 +121,22 @@ class PoolEraseA(tf.keras.layers.Layer):
             ] if activation else []
         
         layers = [
-            tf.keras.layers.MaxPool2D(pool_size=(1, pool)),
+            tf.keras.layers.Conv2D(
+                filters=pool_filters,
+                kernel_size=(1, pool),
+                strides=(1, pool),
+                padding="same",
+            ),
+            tf.keras.layers.DepthwiseConv2D(
+                kernel_size=(1, pool_kernel),
+                strides=(1, 1),
+                padding="same",
+                depthwise_initializer=dw_init_identity,
+            ),
+            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3),
         ]
-        for _ in range(repeat-1):
+
+        for _ in range(repeat-2):
             layers.extend(
                 _tcs(
                     out_channels=pool_filters,
@@ -137,21 +151,14 @@ class PoolEraseA(tf.keras.layers.Layer):
                 _activation() if _ % 2 == 0 else [tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)]
             )
 
-        layers.extend(
-            _tcs(
-                out_channels=pool_filters,
-                kernel=kernel,
-                separable=separable,
-                stride=stride,
-                bn_momentum=bn_momentum,
-                dilation=1,
-            )
-        )
         layers.extend([
-            tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3),
-            tf.keras.layers.Activation(activations[activation]),
-
-            tf.keras.layers.Conv2DTranspose(filters=filters, kernel_size=(1, pool), strides=(1, pool), use_bias=False),
+            tf.keras.layers.DepthwiseConv2D(
+                kernel_size=(1, pool_kernel),
+                strides=(1, 1),
+                padding="same",
+                depthwise_initializer=dw_init_identity,
+            ),
+            tf.keras.layers.Conv2DTranspose(filters=filters, kernel_size=(1, pool), strides=(1,pool), use_bias=False),
             tf.keras.layers.BatchNormalization(momentum=bn_momentum, epsilon=1e-3)
         ])
         self.main = layers
@@ -173,7 +180,7 @@ class PoolEraseA(tf.keras.layers.Layer):
         return seq(self.final, x1+x2, training=training)
 
     def fold_bn(self):
-        _fold_bn(self.head, self.residual)
+        _fold_bn(self.main, self.residual)
 
 
 class PoolConv(tf.keras.layers.Layer):
