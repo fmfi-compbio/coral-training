@@ -445,18 +445,6 @@ configs = {
         #C1
         dict(activation="relu6",bn_momentum=0.9, repeat = 1, filters = 64, kernel = 7, stride = 3, residual = False, separable = False,),
     ]),
-    "pool": lambda: pool(pool=2, filters=128, pool_filters=256),
-    "pool3f140": lambda: pool(filters=140, pool_filters=280),
-    "pool3f148": lambda: pool(filters=148, pool_filters=296),
-    "pool3f152": lambda: pool(filters=152, pool_filters=304),
-    "pool4": lambda: pool(pool=4, filters=128, pool_filters=256),
-    "pool4f152x360": lambda: pool(pool=4, filters=152, pool_filters=360),
-
-    "pool3": lambda: pool(pool=3, filters=128, pool_filters=256),
-    "pool3r4": lambda: pool(pool=3, filters=128, pool_filters=256, repeat=4),
-    "pool3r5": lambda: pool(pool=3, filters=128, pool_filters=256, repeat=5),
-
-    "poolc2x128x196": lambda: pool(type="poolconv", pool=2, filters=128, pool_filters=196),
 
     "poolx3": lambda: pool(type="poolx"),
     "poolx3r4": lambda: pool(type="poolx", filters=128, pool_filters=256, repeat=4),
@@ -551,16 +539,12 @@ configs = {
 
     "poolx3r5f144x256k9x9": lambda: pool(type="poolx", pool=3, filters=144, pool_filters=256, kernel=9, pool_kernel=9, repeat=5),
     "poolx3r5f156x224k9x9": lambda: pool(type="poolx", pool=3, filters=156, pool_filters=224, kernel=9, pool_kernel=9, repeat=5),
-    "poolxu3r5": lambda: pool(type="poolxu", pool=3, filters=128, pool_filters=256, repeat=5),
 
     "poolx3r4b6": lambda: pool(type="poolx", pool=3, filters=128, pool_filters=256, repeat=4,blocks=6),
     "poolx3r5b6": lambda: pool(type="poolx", pool=3, filters=128, pool_filters=256, repeat=5,blocks=6),
     "poolx3r6": lambda: pool(type="poolx", pool=3, filters=128, pool_filters=256, repeat=6,blocks=5),
 
-    "poolffd13r5f148x280": lambda: pool(type="poolff", depth_multiplier=1, filters=148, pool_filters=280, repeat=5),
-    "pooljj3r5f148x288": lambda: pool(type="pooljj", filters=148, pool_filters=288, repeat=5),
 
-    "poolxv3r5": lambda: pool(type="poolxv", pool=3, filters=128, pool_filters=256, repeat=5),
     "poolx3r5f144x288": lambda: pool(type="poolx", pool=3, filters=144, pool_filters=288, repeat=5),
 
     "poolx3r5initi": lambda: pool(type="poolxiniti", pool=3, filters=128, pool_filters=256, repeat=5),
@@ -595,8 +579,6 @@ configs = {
     "poolx3r5initiibn": lambda: pool(type="poolxinitiibn", pool=3, filters=128, pool_filters=256, repeat=5),
 
     "poolx3r5initiifull": lambda: poolinit(type="poolxinitii", pool=3, filters=128, pool_filters=256, repeat=5),
-
-    "poolpd3r5": lambda: pool(type="poolpd", pool=3, filters=128, pool_filters=256, repeat=5),
 
     "blockd": lambda: blockd(),
     "blockdinit": lambda: blockd(type="blockdinit"),
