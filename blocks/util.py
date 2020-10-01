@@ -54,6 +54,48 @@ def pw_init_identity(shape, dtype=None):
         data[0][0][i % shape[2]][i] = 1.0
     return tf.constant(data, dtype=dtype)
 
+def conv_init_identity(shape, dtype=None):
+    assert(len(shape) == 4)
+    assert(shape[0] == 1)
+    data = np.random.uniform(-0.01, 0.01, shape)
+    for i in range(shape[3]):
+        data[0][shape[1] // 2][i % shape[2]][i] = 1.0
+    return tf.constant(data, dtype=dtype)
+
+
+def conv_init_diag(shape, dtype=None):
+    assert(len(shape) == 4)
+    assert(shape[0] == 1)
+    data = np.random.uniform(-0.01, 0.01, shape)
+    for i in range(shape[3]):
+        data[0][shape[1] // 2][i % shape[2]][i] = np.random.uniform(-1, 1)
+    return tf.constant(data, dtype=dtype)
+
+
+def pool_init_identity(shape, dtype=None):
+    #print("SHAPE", shape)
+    assert(len(shape) == 4)
+    assert(shape[0] == 1)
+    #assert(shape[1] == 1)
+    data = np.random.uniform(-0.01, 0.01, shape)
+    for j in range(shape[1]):
+        for i in range(shape[3]):
+            data[0][j][i % shape[2]][i] = 1.0
+    return tf.constant(data, dtype=dtype)
+
+
+def unpool_init_identity(shape, dtype=None):
+    #print("SHAPE", shape)
+    assert(len(shape) == 4)
+    assert(shape[0] == 1)
+    #assert(shape[1] == 1)
+    data = np.random.uniform(-0.01, 0.01, shape)
+    for j in range(shape[1]):
+        for i in range(shape[3]):
+            data[0][j][i % shape[2]][i] = 1.0
+    return tf.constant(data, dtype=dtype)
+
+
 def tcsconv(*, out_channels, kernel, stride, separable, dilation=1, activation=None):
     if separable:
         return tf.keras.layers.SeparableConv2D(
