@@ -245,6 +245,25 @@ def pool(*, type="pool", filters, pool_filters, pool=3, repeat=3,blocks=5, kerne
     ]
     return cfg
 
+def poolinit(*, type="pool", filters, pool_filters, pool=3, repeat=3,blocks=5, kernel=11, **kwargs):
+    common = dict(activation="relu6", bn_momentum=0.9)
+    cfg = [
+        #C1
+        dict(**common, repeat = 1, filters = 64, kernel = 9, stride = 3, residual = False, separable = False,),
+
+        #B
+        *[
+            dict(**common, type=type, pool=pool, repeat = repeat, pool_filters=pool_filters, filters = filters, kernel = kernel, separable = True, **kwargs)
+            for _ in range(blocks)
+        ],
+
+        #C2
+        dict(**common, type="sepinit", filters = 128, kernel = 11),
+        #C3
+        dict(**common, type="convinit", filters = 64, kernel = 7),
+        dict(type="decoder", init='zeros')
+    ]
+    return cfg
 
 
 def poolhead(*, type="pool", filters, pool_filters, pool=3, repeat=3,blocks=5, kernel=11, **kwargs):
@@ -306,6 +325,26 @@ def simpleres(*, type="simpleres", filters, repeat=4, blocks=5, kernel=11, **kwa
         dict(**common, repeat = 1, filters = 128, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 7, residual = False, separable = False,),
+        dict(type="decoder")
+    ]
+    return cfg
+
+
+def blockd(*, activation="relu6", type="blockD", width=128, kernel=5, repeat=5, blocks=5):
+    common = dict(activation=activation)
+    cfg = [
+        #C1
+        dict(**common, repeat = 1, filters = width, kernel = 9, stride = 3, residual = False, separable = False,),
+
+        #B1
+        *[
+            dict(**common, type=type, repeat = repeat, filters = width, kernel = kernel)
+            for _ in range(blocks)
+        ],
+        #C2
+        dict(**common, repeat = 1, filters = 160, kernel = 11, residual = False, separable = True,),
+        #C3
+        dict(**common, repeat = 1, filters = 64, kernel = 11, residual = False, separable = False,),
         dict(type="decoder")
     ]
     return cfg
@@ -526,13 +565,44 @@ configs = {
 
     "poolx3r5initi": lambda: pool(type="poolxiniti", pool=3, filters=128, pool_filters=256, repeat=5),
     "poolx3r5initii": lambda: pool(type="poolxinitii", pool=3, filters=128, pool_filters=256, repeat=5),
+    "poolx3r5initiii": lambda: pool(type="poolxinitiii", pool=3, filters=128, pool_filters=256, repeat=5),
+    "poolx3r5initiv": lambda: pool(type="poolxinitiv", pool=3, filters=128, pool_filters=256, repeat=5),
+    "poolx3r5initv": lambda: pool(type="poolxinitv", pool=3, filters=128, pool_filters=256, repeat=5),
+
     "poolx3r5initj": lambda: pool(type="poolxinitj", pool=3, filters=128, pool_filters=256, repeat=5),
 
     "poolx3r5bn": lambda: pool(type="poolxbn", pool=3, filters=128, pool_filters=256, repeat=5),
 
     "poolerasea3r5": lambda: pool(type="poolerasea", pool=3, filters=128, pool_filters=256, repeat=5),
+    "pooleraseb3r5": lambda: pool(type="pooleraseb", pool=3, filters=128, pool_filters=256, repeat=5),
+    "poolerasec3r5": lambda: pool(type="poolerasec", pool=3, filters=128, pool_filters=256, repeat=5),
+    "poolerased3r5": lambda: pool(type="poolerased", pool=3, filters=128, pool_filters=256, repeat=5),
+    "poolerasedx3r5": lambda: pool(type="poolerasedx", pool=3, filters=128, pool_filters=256, repeat=5),
+    "poolerasedd3r5": lambda: pool(type="poolerasedd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
+    "pooleraseddd3r5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
+    "pooleraseedd3r5": lambda: pool(type="pooleraseedd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
+    "poolerasee3r5": lambda: pool(type="poolerasee", pool=3, filters=128, pool_filters=256, repeat=5),
+
+    # local optimization of kernel sizes
+    "pooleraseddd3r5k9x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=9, pool_kernel=5,),
+    "pooleraseddd3r5k7x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=7, pool_kernel=5,),
+    "pooleraseddd3r5k5x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=5, pool_kernel=5,),
+
+
+    "poolerasec3r5k11x13": lambda: pool(type="poolerasec", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=13),
+    "poolerasecinit3r5": lambda: pool(type="poolerasecinit", pool=3, filters=128, pool_filters=256, repeat=5),
+
+    "poolx3r5initiibn": lambda: pool(type="poolxinitiibn", pool=3, filters=128, pool_filters=256, repeat=5),
+
+    "poolx3r5initiifull": lambda: poolinit(type="poolxinitii", pool=3, filters=128, pool_filters=256, repeat=5),
+
+    "poolpd3r5": lambda: pool(type="poolpd", pool=3, filters=128, pool_filters=256, repeat=5),
+
+    "blockd": lambda: blockd(),
+    "blockdinit": lambda: blockd(type="blockdinit"),
 
     # TODO
+    "poolxd3r5": lambda: pool(type="poolxd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=5, pool_kernel=5),
 
 
     "poolxy3r5": lambda: pool(type="poolxy", pool=3, filters=128, pool_filters=256, repeat=5),
