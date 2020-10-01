@@ -21,6 +21,7 @@ def dpd_config(*, activation="relu6", width=128, kernel=11, residual=True):
         dict(**common, repeat = 1, filters = 160, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 11, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 
@@ -46,6 +47,7 @@ def best16():
         dict(**common, repeat = 1, filters = 160, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 9, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 
@@ -66,6 +68,7 @@ def sloth():
         dict(**common, repeat = 1, filters = 160, kernel = 11, residual = False, separable = False,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 9, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 
@@ -86,6 +89,7 @@ def cnt_search(*, cnt, repeat):
         dict(**common, repeat = 1, filters = 128, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 11, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 
@@ -106,6 +110,7 @@ def nores(*, width):
         dict(**common, repeat = 1, filters = 128, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 11, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 
@@ -133,6 +138,7 @@ def ksize(*, kernel):
         dict(**common, repeat = 1, filters = 128, kernel = kernel, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 11, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 
@@ -148,7 +154,8 @@ def _tail(tail):
             dict(**common, repeat = 3, filters = 128, kernel = 11, residual=True, separable = True,)
             for _ in range(5)
         ],
-        *tail
+        *tail,
+        dict(type="decoder")
     ]
     return cfg
 
@@ -214,6 +221,7 @@ def head(head):
         dict(**common, repeat = 1, filters = 128, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 11, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 
@@ -228,13 +236,15 @@ def pool(*, type="pool", filters, pool_filters, pool=3, repeat=3,blocks=5, kerne
             dict(**common, type=type, pool=pool, repeat = repeat, pool_filters=pool_filters, filters = filters, kernel = kernel, separable = True, **kwargs)
             for _ in range(blocks)
         ],
-
         #C2
         dict(**common, repeat = 1, filters = 128, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 7, residual = False, separable = False,),
+
+        dict(type="decoder")
     ]
     return cfg
+
 
 
 def poolhead(*, type="pool", filters, pool_filters, pool=3, repeat=3,blocks=5, kernel=11, **kwargs):
@@ -254,6 +264,7 @@ def poolhead(*, type="pool", filters, pool_filters, pool=3, repeat=3,blocks=5, k
         dict(**common, repeat = 1, filters = 128, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 7, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 
@@ -273,6 +284,7 @@ def nosep(*, width):
         dict(**common, repeat = 1, filters = 128, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 7, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 
@@ -294,6 +306,7 @@ def simpleres(*, type="simpleres", filters, repeat=4, blocks=5, kernel=11, **kwa
         dict(**common, repeat = 1, filters = 128, kernel = 11, residual = False, separable = True,),
         #C3
         dict(**common, repeat = 1, filters = 64, kernel = 7, residual = False, separable = False,),
+        dict(type="decoder")
     ]
     return cfg
 

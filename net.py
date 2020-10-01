@@ -25,19 +25,10 @@ class CTCLoss(tf.keras.losses.Loss):
         return ctc_loss #+ smooth_loss * 41
 
 
-def Decoder():
-    return tf.keras.layers.Conv2D(
-        filters=5,
-        kernel_size=(1, 1),
-        padding="same",
-        #bias_initializer=lambda shape, dtype=None: tf.constant([0, 0, 0, 0, 2], dtype=dtype)
-    )
 
 class Net(tf.keras.layers.Layer):
     def __init__(self, config, **kwargs):
         super().__init__(**kwargs)
-
-        channels = 1
 
         layers = []
 
@@ -45,11 +36,7 @@ class Net(tf.keras.layers.Layer):
             layers.append(
                 Block(**layer_cfg)
             )
-            channels = layer_cfg['filters']
 
-        layers.append(
-            Decoder()
-        )
         self.layers = layers
         self.config = config
         
