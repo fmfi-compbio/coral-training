@@ -47,6 +47,10 @@ schedules = {
     "linear_1500_001": variable(1500, lambda x: 0.01 * (1-x)),
     "linear_2000_001": variable(2000, lambda x: 0.01 * (1-x)),
     "linear_3000_001": variable(3000, lambda x: 0.01 * (1-x)),
+    "linear_4000_001": variable(4000, lambda x: 0.01 * (1-x)),
+    "linear_6000_001": variable(10, lambda x: 0.01 * x) + variable(5990, lambda x: 0.01 * (1-x)),
+    "linear_8000_001": variable(25, lambda x: 0.01 * x) + variable(7975, lambda x: 0.01 * (1-x)),
+    "linear_10000_001": variable(50, lambda x: 0.01 * x) + variable(9950, lambda x: 0.01 * (1-x)),
 
 
     "linear_2000_0001": variable(2000, lambda x: 0.001 * (1-x)),
