@@ -3,24 +3,22 @@ from Bio.pairwise2 import format_alignment
 import numpy as np
 
 def align_dist(outputs, bby):
-    alph = "ACGT"
-    #alph = "AACCGGTT"
+    alph = "NACGT"
 
     ed_total = 0
     size_total = 0
     for out, by in zip(outputs[:3], bby[:3]):
-        targets = [x for x in by if x != -1]
+        targets = [x for x in by if x > 0]
         preds = []
         prev = 0
-        for p in list(np.argmax(out, axis=1)):
-            #print(p)
+        for p in list(np.argmax(out, axis=-1)):
             if p == prev:
                 continue
-            if p != len(alph):
+            if p != 0:
                 preds.append(p)
             prev = p
         alignment = pairwise2.align.globalms(
-            "A" + "".join([alph[x] for x in targets]),
+            "A" + "".join(map(lambda x: alph[x], targets)),
             "A" + "".join(map(lambda x: alph[x], preds)),
             0,
             -1,
