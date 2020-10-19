@@ -43,7 +43,7 @@ def get_dataset_files(root_dir):
 
 def load_file(fname):
     alph = np.zeros(256, dtype=np.int8)
-    for i,c in enumerate("ACGTN"):
+    for i,c in enumerate("NACGT"):
         alph[ord(c)] = i
     data = np.load(fname)
 
@@ -104,7 +104,7 @@ def prep_batch(
         #x = np.vstack([x, (y_base != 4).astype(np.float32)]).T
         #print(x)
         y_base = y_base[target_cut:-target_cut]
-        y = y_base[np.where(y_base != 4)]
+        y = y_base[np.where(y_base != 0)]
         #y = [point for point in y_base if point != 4]
 
         if len(y) < 10 or len(y) > x.shape[0] // 3:
