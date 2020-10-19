@@ -96,7 +96,7 @@ def unpool_init_identity(shape, dtype=None):
     return tf.constant(data, dtype=dtype)
 
 
-def tcsconv(*, out_channels, kernel, stride, separable, dilation=1, activation=None):
+def tcsconv(*, separable, out_channels, kernel, stride=1, dilation=1, activation=None):
     if separable:
         return tf.keras.layers.SeparableConv2D(
             filters=out_channels,
@@ -118,7 +118,8 @@ def tcsconv(*, out_channels, kernel, stride, separable, dilation=1, activation=N
 
 def seq(layers, inputs, **kwargs):
     for l in layers:
-        inputs = l(inputs, **kwargs)
+        if l is not None:
+            inputs = l(inputs, **kwargs)
     return inputs
 
 activations = {

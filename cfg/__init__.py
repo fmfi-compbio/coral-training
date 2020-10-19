@@ -349,6 +349,23 @@ def blockd(*, activation="relu6", type="blockD", width=128, kernel=5, repeat=5, 
     ]
     return cfg
 
+
+
+def paper_eval(*, b_template, filters=128):
+    cfg = [
+        #C1
+        dict(type="paperC", filters = filters, kernel = 9, stride = 3, separable = False,),
+        #B1-5
+        *[b_template for _ in range(5)],
+        #C2
+        dict(type="paperC", filters = filters, kernel = 11, separable = True,),
+        #C3
+        dict(type="paperC", filters = 64, kernel = 7, separable = False,),
+        #Decoder
+        dict(type="decoder")
+    ]
+    return cfg
+
 configs = {
     "default": lambda: tinyB.get_config(activation="relu6", bn_momentum=0.90, filters=128),
     #"default": lambda: tinyB.get_config(activation="relu6", bn_momentum=0.90, filters=152),
@@ -571,7 +588,36 @@ configs = {
     "pooleraseddd3r5k9x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=9, pool_kernel=5,),
     "pooleraseddd3r5k7x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=7, pool_kernel=5,),
     "pooleraseddd3r5k5x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=5, pool_kernel=5,),
+    "pooleraseddd3r5k3x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=3, pool_kernel=5,),
+    "pooleraseddd3r5k1x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=1, pool_kernel=5,),
 
+    "pooleraseddd3r5k11x7": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=9, pool_kernel=7,),
+    "pooleraseddd3r5k11x3": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=9, pool_kernel=3,),
+
+
+    "poolerasedddinit3r5": lambda: pool(type="poolerasedddinit", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
+
+    "poolerasedddr3r5": lambda: pool(type="poolerasedddr", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
+    "poolerasedddq3r5": lambda: pool(type="poolerasedddq", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
+    "poolerasedddnobias3r5": lambda: pool(type="poolerasedddnobias", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
+
+    "pooleraseddd3r5k0x5f112x272": lambda: pool(type="pooleraseddd", pool=3, filters=112, pool_filters=272, repeat=5, kernel=0, pool_kernel=5,),
+    "pooleraseddd3r5k0x5f128x256": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=0, pool_kernel=5,),
+    "pooleraseddd3r5k0x5f136x256": lambda: pool(type="pooleraseddd", pool=3, filters=136, pool_filters=256, repeat=5, kernel=0, pool_kernel=5,),
+
+    "pooleraseddd3r5k0x5f156x180": lambda: pool(type="pooleraseddd", pool=3, filters=156, pool_filters=180, repeat=5, kernel=0, pool_kernel=5,),
+    "pooleraseddd3r5k0x5f136x272": lambda: pool(type="pooleraseddd", pool=3, filters=136, pool_filters=272, repeat=5, kernel=0, pool_kernel=5,),
+
+
+    "pooleraseddd3r6k0x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=6, kernel=0, pool_kernel=5,),
+    "pooleraseddd3r5b6k0x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=5, kernel=0, pool_kernel=5, blocks=6),
+    "pooleraseddd3r4b7k0x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=4, kernel=0, pool_kernel=5, blocks=7),
+    "pooleraseddd3r4b8k0x5": lambda: pool(type="pooleraseddd", pool=3, filters=128, pool_filters=256, repeat=4, kernel=0, pool_kernel=5, blocks=8),
+    "pooleraseddd3r4b6k0x5f136x272": lambda: pool(type="pooleraseddd", pool=3, filters=136, pool_filters=272, repeat=4, kernel=0, pool_kernel=5, blocks=6),
+
+    "poolerasedddiniti3r5": lambda: pool(type="poolerasedddiniti", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
+    "poolerasedddinitii3r5": lambda: pool(type="poolerasedddinitii", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
+    "poolerasedddinitx3r5": lambda: pool(type="poolerasedddinitx", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=5,),
 
     "poolerasec3r5k11x13": lambda: pool(type="poolerasec", pool=3, filters=128, pool_filters=256, repeat=5, kernel=11, pool_kernel=13),
     "poolerasecinit3r5": lambda: pool(type="poolerasecinit", pool=3, filters=128, pool_filters=256, repeat=5),
@@ -593,5 +639,21 @@ configs = {
     "simpleeypr4b5f128x160": lambda: simpleres(type="simpleeyp", filters=128,exp_filters=160, repeat=4, blocks=5),
     "simpleezpr1b20f128x160": lambda: simpleres(type="simpleezp", filters=128,exp_filters=160, repeat=1, blocks=20),
     "simpleezpr4b5f128x160": lambda: simpleres(type="simpleezp", filters=128,exp_filters=160, repeat=4, blocks=5),
+
+    "paper_bonito_f128_k11_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperB", repeat=5, filters=128, kernel=11, separable=True)),
+    "paper_bonito_f128_k15_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperB", repeat=5, filters=128, kernel=15, separable=True)),
+    "paper_bonito_f128_k33_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperB", repeat=5, filters=128, kernel=33, separable=True)),
+    "paper_bonito_f128_k45_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperB", repeat=5, filters=128, kernel=45, separable=True)),
+    
+    "paper_ksep_f128_k15_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperKSep", k=3, repeat=5, filters=128, kernel=15)),   
+    "paper_ksep_f128_k33_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperKSep", k=3, repeat=5, filters=128, kernel=33)),
+    "paper_ksep_f128_k45_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperKSep", k=3, repeat=5, filters=128, kernel=45)),
+
+    "paper_d2s_3to2_f128_k11_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperD2S", depth=3, repeat=5, filters=128, d2s_filters=256, kernel=11, separable=True)),
+    "paper_d2s_3to2_f128_k15_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperD2S", depth=3, repeat=5, filters=128, d2s_filters=256, kernel=15, separable=True)),
+
+    "paper_both_f128_k15_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperBoth", depth=3, k=3, repeat=5, filters=128, d2s_filters=256, kernel=15)),
+    
+    "paper_both_init_f128_k15_r5": lambda: paper_eval(filters=128, b_template=dict(type="paperBothInit", depth=3, k=3, repeat=5, filters=128, d2s_filters=256, kernel=15)),
 
 }

@@ -32,9 +32,9 @@ def partition(iter, pred):
     return (_true, _false)
 
 
-def get_dataset_files(root_dir):
+def get_dataset_files(root_dir, random_seed=47):
     #return my_listdir(root_dir, 200)
-    rng = random.Random(47)
+    rng = random.Random(random_seed)
     all_file_list = my_listdir(root_dir, 500000)
     pcr_files, native_files = partition(all_file_list, lambda fname: "GXB" in fname or "MINICOL" in fname)
 
@@ -117,6 +117,6 @@ def prep_batch(
         by.append(np.pad(y, (0, leng-len(y)), constant_values=-1))
 
     return (
-        bx,
-        by
+        np.stack(bx),
+        np.stack(by)
     )

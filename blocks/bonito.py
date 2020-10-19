@@ -94,9 +94,9 @@ class BlockB(tf.keras.layers.Layer):
         
         self.residual = _tcs(
             out_channels=filters,
-            kernel=kernel,
-            stride=stride,
-            separable=separable,
+            kernel=1,
+            stride=1,
+            separable=False,
             bn_momentum=bn_momentum,
         )
 
