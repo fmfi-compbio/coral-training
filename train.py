@@ -80,9 +80,9 @@ def main():
             B_SIZE = args.batch_size
             B_CNT = 1500 // B_SIZE
 
-            x, y = get_batch(batch_size=1500, leng=SEQLEN)
-            model.fit(x, y, batch_size=B_SIZE, callbacks=[])
-            #model.fit((get_batch(batch_size=B_SIZE, leng=SEQLEN) for _ in range(B_CNT)))
+            #x, y = get_batch(batch_size=1500, leng=SEQLEN)
+            #model.fit(x, y, batch_size=B_SIZE, callbacks=[])
+            model.fit((get_batch(batch_size=B_SIZE, leng=SEQLEN) for _ in range(B_CNT)))
             stats = align_stats.align_dist(model(x_test), y_test)
             print("epoch ", epoch, stats[0]/stats[1])
             #print(epoch, stats, file=f_stat)

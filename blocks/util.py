@@ -42,7 +42,7 @@ def dw_init_identity(shape, dtype=None):
     assert(shape[3] == 1)
     data = np.random.uniform(-0.01, 0.01, shape)
     for i in range(shape[2]):
-        data[0][shape[1] //2][i][0] = 1.0
+        data[0][shape[1]//2][i][0] = 1.0
     return tf.constant(data, dtype=dtype)
 
 def pw_init_identity(shape, dtype=None):
@@ -57,9 +57,22 @@ def pw_init_identity(shape, dtype=None):
 def conv_init_identity(shape, dtype=None):
     assert(len(shape) == 4)
     assert(shape[0] == 1)
-    data = np.random.uniform(-0.01, 0.01, shape)
+    data = np.random.uniform(-0.01, 0.01, shape)  
     for i in range(shape[3]):
-        data[0][shape[1] // 2][i % shape[2]][i] = 1.0
+        data[0][shape[1]//2][i % shape[2]][i] = 1.0
+    return tf.constant(data, dtype=dtype)
+
+
+def conv_init_dw_identity(shape, dtype=None):
+    assert(len(shape) == 4)
+    assert(shape[0] == 1)
+    data = np.random.uniform(-0.1, 0.1, shape)
+    for i in range(shape[1]):
+        if i == shape[1] // 2:
+            continue
+        for j in range(shape[2]):
+            for k in range(shape[3]):
+                data[0][i][j][k] = 0
     return tf.constant(data, dtype=dtype)
 
 

@@ -5,6 +5,7 @@ def variable(epochs, lr_f):
 
 schedules = {
     # for testing if edgetpu compiler likes the architecture
+    "zero": [],
     "one": [(1, 0.01)],
     "test": [
         (6, 0.01),
