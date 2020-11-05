@@ -2,7 +2,7 @@ import argparse
 import random
 import tensorflow as tf
 
-import cfg
+import configs
 import net
 import converter
 import data_loader
@@ -28,7 +28,7 @@ def main():
         tf.random.set_seed(args.tf_seed)
     # Prepare model
     schedule = schedules.schedules[args.schedule]
-    net_cfg = cfg.configs[args.config]()
+    net_cfg = configs.configs[args.config]()
 
     model = net.make_model(net_cfg)
 
