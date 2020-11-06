@@ -23,9 +23,9 @@ To run experiments in the paper
 ```
 TF_FORCE_GPU_ALLOW_GROWTH=true python train.py --data_dir=/path/to/training/dataset --batch_size 100 --schedule linear_6000_001 --config paper_bonito_f128_k7_r5 --outname paper_bonito_f128_k7_r5
 ```
-This will produce `models/paper_bonito_f128_k7_r5.tflite` in about a day of training on GTX 1080. 
+This will produce `models/paper_bonito_f128_k7_r5.tflite` in about a day of training on GTX 1080 Ti. 
 
-To see a full list of available network configurations, see `configs.py`
+To see a full list of available network configurations to train, see `configs.py`
 
 
 ## Evaluation
