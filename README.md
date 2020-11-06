@@ -1,6 +1,8 @@
-# Training pipeline for DeepNano-Coral
+# Training pipeline for DeepNano-Coral basecaller
 
-see TODO (arxiv link)
+This is a training pipeline for our Coral Edge TPU basecaller (TODO: arxiv link).
+For the basecaller itself visit https://github.com/fmfi-compbio/coral-basecaller.
+
 
 ## Prerequisites
 
@@ -17,7 +19,11 @@ You need to install `pip install tf-nightly-gpu biopython` in order to run the t
 
 To run experiments in the paper
 1) download training dataset: TODO
-2) run `TF_FORCE_GPU_ALLOW_GROWTH=true python train.py --data_dir=/path/to/training/dataset --batch_size 100 --schedule linear_6000_001 --config paper_bonito_f128_k7_r5 --outname paper_bonito_f128_k7_r5`. This will produce `models/paper_bonito_f128_k7_r5.tflite` in about a day of training on GTX 1080. 
+2) run
+```
+TF_FORCE_GPU_ALLOW_GROWTH=true python train.py --data_dir=/path/to/training/dataset --batch_size 100 --schedule linear_6000_001 --config paper_bonito_f128_k7_r5 --outname paper_bonito_f128_k7_r5
+```
+This will produce `models/paper_bonito_f128_k7_r5.tflite` in about a day of training on GTX 1080. 
 
 To see a full list of available network configurations, see `configs.py`
 
