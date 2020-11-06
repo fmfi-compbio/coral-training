@@ -31,3 +31,4 @@ To see a full list of available network configurations to train, see `configs.py
 ## Evaluation
 In order to evaluate on Coral you need to first compile the model:
 `edgetpu_compiler -a -s models/paper_bonito_f128_k7_r5.tflite`, this should produce `paper_bonito_f128_k7_r5_edgetpu.tflite` file.
+Then follow basecalling instructions at https://github.com/fmfi-compbio/coral-basecaller
