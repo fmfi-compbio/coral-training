@@ -1,6 +1,6 @@
 # Training pipeline for DeepNano-Coral basecaller
 
-This is a training pipeline for our Coral Edge TPU basecaller (TODO: arxiv link).
+This is a training pipeline for our Coral Edge TPU basecaller (https://arxiv.org/abs/2011.04312).
 For the basecaller itself visit https://github.com/fmfi-compbio/coral-basecaller.
 
 
